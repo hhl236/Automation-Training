@@ -1,0 +1,15 @@
+---
+#snmp-role-pb.yml
+
+-  name: Multi-platform SNMP
+   hosts: iosxe, nxos
+   connection: network_cli
+   gather_facts: no
+
+   roles:
+    - role: snmp
+      snmp_communities:
+        -  community: ntc-public
+           group: network-operator
+        -  community: ntc-private
+           group: network-admin

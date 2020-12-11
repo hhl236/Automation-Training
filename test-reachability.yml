@@ -1,0 +1,38 @@
+---
+
+#test-reachability.yml
+  - name: Ping test and traceroute
+    hosts: csr1
+    connection: network_cli
+    gather_facts: no
+
+    vars:
+      dest: "10.0.0.15"
+
+    tasks:
+
+      - name: Issue Ping
+        ios_command:
+          commands: "ping {{ dest }} repeat 2"
+        register: output
+
+      - name: parse ping response to obtain % of success
+        set_fact:
+          ping_pct: "{{ output.stdout.0 | regex_search('Success rate is (\\d+)\\s+percent') | regex_search('(\\d+)')}}"
+      
+      - debug:
+          var: ping_pct
+
+      - name: Alternate option for parsing with regex
+        set_fact:
+          ping_data2: "{{ output.stdout.0 | regex_findall('Success rate is (\\d+)\\s+percent') | first }}"
+
+      - name: Issue traceroute
+        ios_command:
+          commands: "traceroute {{ dest }} timeout 1 ttl 1 5" 
+        register: traceroute
+        when: ping_pct|int < 81
+
+      - name: Debug traceroute
+        debug:
+          var: traceroute        

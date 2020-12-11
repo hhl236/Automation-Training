@@ -1,0 +1,22 @@
+---
+#user_input.yml
+
+- name: COLLECT USERNAME AND PASSWORD
+  hosts: all
+  connection: local
+  gather_facts: no
+
+  vars_prompt:
+      - name: un 
+        prompt: "Please enter the username"
+        private: no
+
+      - name: pwd
+        prompt: "Please enter the password"
+        private: no
+
+  tasks:
+
+      - name: Display username and password
+        debug:
+          msg: "The username is {{ un }} and password is {{ pwd }}"

@@ -1,0 +1,50 @@
+---
+#deploy-snmpv2.yml
+
+  - name: GENERATE SNMP CONFIGS USING JINJA2 - AMERICAS
+    hosts: AMER, EMEA
+    connection: local
+    gather_facts: no
+
+    tasks:
+
+      - name: view snmp ro variable
+        debug:
+          var: snmp_ro
+
+      - name: View SNMP Location variable
+        debug:
+          var: snmp_location
+
+      - name: Generate IOS SNMP config
+        template:
+          src: "{{ ansible_network_os }}-snmpv2.j2"
+          dest: "/home/ntc/files/ansible/configs/{{ inventory_hostname}}-snmp.cfg"
+
+      - name: DEBUG AND PRINT SNMP VARIABLES
+        debug:
+          var: snmp_config
+
+  # - name: GENERATE SNMP CONFIGS USING JINJA2 - EMEA
+  #   hosts: EMEA
+  #   connection: local
+  #   gather_facts: no
+
+  #   tasks:
+
+  #     - name: view snmp ro variable
+  #       debug:
+  #         var: snmp_ro
+
+  #     - name: view snmp location
+  #       debug:
+  #         var: snmp_location
+
+  #     - name: generate junos snmp config
+  #       template:
+  #         src: "{{ ansible_network_os }}"-snmpv2.j2
+  #         dest: "/home/ntc/files/ansible/configs/{{ inventory_hostname}}-snmp.cfg"
+
+  #     - name: DEBUG AND PRINT SNMP VARIABLES
+  #       debug:
+  #         var: snmp_config

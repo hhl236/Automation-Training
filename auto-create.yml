@@ -1,0 +1,17 @@
+---
+#autocreate.yml
+
+  - name: Auto generate files and directories
+    hosts: all
+    connection: local
+    gather_facts: no
+
+    tasks:
+      - name: CREATE DIRECTORIES BASED ON OS
+        file: 
+          path: /home/ntc/files/ansible/{{ ansible_network_os }}/
+          state: directory
+      - name: CREATE SNMP.CONF FILE
+        file: 
+          path: /home/ntc/files/ansible/{{ ansible_network_os }}/{{inventory_hostname}}-snmp.conf
+          state: touch

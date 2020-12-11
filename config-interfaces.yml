@@ -1,0 +1,21 @@
+---
+
+#config-interfaces.yml
+
+- name: Configuring interfaces
+  hosts: iosxe
+  connection: network_cli
+  gather_facts: no
+
+  tasks:
+
+    - name: Backup config
+      ios_config:
+        backup: True
+
+    - name: Configuring Loopback
+      ios_config:
+        parents:
+          - interface Loopback200
+        commands:
+          - ip address 10.200.100.1{{inventory_hostname[-1]}} 255.255.255.255

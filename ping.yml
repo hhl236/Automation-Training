@@ -1,0 +1,37 @@
+---
+
+  - name: Test Reachability
+    hosts: iosxe
+    connection: network_cli
+    gather_facts: no
+
+    vars:
+      target_ips:
+        - "10.0.0.15"
+        - "10.0.0.2"
+        - "192.6.1.4"
+
+    tasks:
+
+      - name: Ping directory
+        file:
+          path: /home/ntc/files/ansible/pingresponse/{{ inventory_hostname }}/
+          state: directory
+
+      - name: Ping devices
+        ios_command:
+          commands:
+            - "ping {{ item }} repeat 2"
+        register: ping_responses
+        loop: "{{ target_ips }}"
+
+      - name: Test Loops 
+        debug:
+          var: "{{ item }}"
+        loop: "{{ ping_responses.results }}"
+
+      - name: Store backup in a file
+        template:
+          src: copy.j2
+          dest: /home/ntc/files/ansible/pingresponse/{{inventory_hostname}}/to_{{item.item}}.txt
+        loop: "{{ ping_responses.results }}"

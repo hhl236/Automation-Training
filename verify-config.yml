@@ -1,0 +1,34 @@
+---
+
+#verify-config.yml
+
+-  name: Using diff against with config
+   hosts: csr3
+   connection: network_cli
+   gather_facts: no
+
+   tasks:
+    
+    -  name: Ensure Loopback 222 is configured
+       ios_config:
+        parents:
+          - interface Loopback222
+        commands:
+          - ip address 10.224.222.222 255.255.255.255
+        diff_against: running
+       tags: diff_me
+
+    -  name: Create backup file variable
+       set_fact:
+        backup_file: "{{ lookup('fileglob', 'backup/{{ inventory_hostname }}_config.*') }}"
+       tags: verify_config
+
+    -  name: Debug backup
+       debug:
+        var: backup_file
+
+    -  name: Verify golden config
+       ios_config:
+        diff_against: intended
+        intended_config: "{{ lookup('file', '{{ backup_file }}') }}"
+       tags: verify_config

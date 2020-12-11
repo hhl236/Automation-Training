@@ -1,0 +1,41 @@
+---
+
+#backups.yml
+
+  - name: Backup configs
+    hosts: all
+    connection: local
+    gather_facts: no
+
+    # vars:
+    #   backup_command:
+    #     eos: show run
+    #     ios: show run
+    #     nxos: show run
+    #     junos: show configuration
+    #   connection_details:
+    #     username: "{{ ansible_user }}"
+    #     password: "{{ ansible_ssh_pass }}"
+    #     host: "{{ inventory_hostname }}"
+
+    tasks:
+      - name: Backup configs
+        ntc_show_command:
+          provider: "{{ connection_details }}"
+          command: "{{ backup_command[ansible_network_os] }}"
+          local_file: "./backups/{{ inventory_hostname }}.cfg"
+          platform: "{{ ntc_vendor }}_{{ ansible_network_os }}"
+
+      - name: Clean up IOS configs - Line 1
+        lineinfile:
+          dest: ./backups/{{ inventory_hostname }}.cfg
+          line: "Building configuration..."
+          state: absent
+        tags: clean
+
+      - name: Clean up IOS configs - Line 2
+        lineinfile:
+          dest: ./backups/{{ inventory_hostname }}.cfg
+          regexp: "Current configuration .*"
+          state: absent
+        tags: clean

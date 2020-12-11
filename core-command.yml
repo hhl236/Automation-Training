@@ -1,0 +1,52 @@
+---
+#core-command.yml
+
+  - name: BACKUP SHOW VERSION FOR IOS
+    hosts: iosxe
+    connection: network_cli
+    gather_facts: no
+
+    tasks:
+      - name: Get show commands
+        ios_command:
+          commands: show version
+        register: config_data
+      
+      - name: View data stored in data
+        debug:
+          var: config_data
+      
+      - name: Create directories
+        file:
+          path: /home/ntc/files/ansible/os/{{ ansible_network_os }}
+          state: directory
+
+      - name: Save show version to file
+        copy:
+          content: "{{ config_data['stdout'][0] }}"
+          dest: /home/ntc/files/ansible/os/{{ ansible_network_os }}/{{ inventory_hostname }}-show-version-{{ now ()}}.txt
+
+  - name: BACKUP SHOW VERSION FOR JUNOS
+    hosts: vmx
+    connection: netconf
+    gather_facts: no
+
+    tasks:
+      - name: Get show commands
+        junos_command:
+          commands: show version
+        register: config_data
+        
+      - name: View data stored in data
+        debug:
+          var: config_data
+        
+      - name: Create directories
+        file:
+          path: /home/ntc/files/ansible/os/{{ ansible_network_os }}
+          state: directory
+
+      - name: Save show version to file
+        copy:
+          content: "{{ config_data['stdout'][0] }}"
+          dest: /home/ntc/files/ansible/os/{{ ansible_network_os }}/{{ inventory_hostname }}-show-version-{{ now ()}}.txt

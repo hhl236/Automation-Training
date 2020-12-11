@@ -1,0 +1,43 @@
+---
+
+#aaa.yml
+
+- name: Config AAA server groups
+  hosts: csr1
+  connection: network_cli
+  gather_facts: no
+
+  tasks:
+    - name: Deploying AAA group and IPS 1
+      ios_config:
+        parents:
+          - aaa group server tacacs+ TESTING
+        commands:
+          - server 1.2.3.4
+          - server 2.1.3.4
+          - server 3.2.1.4
+      tags: starting_config
+    
+    - name: DEPLOYING AAA GROUP AND IPS 2
+      ios_config:
+          parents:
+            - aaa group server tacacs+ TESTING
+          commands:
+            - server 4.3.2.1
+            - server 1.2.3.4
+            - server 2.1.3.4
+            - server 3.2.1.4
+      tags: append_server
+
+    - name: Deploying AAA Group and IPS 3
+      ios_config:
+        before: no aaa group server tacacs+ TESTING
+        parents:
+          - aaa group server tacacs+ TESTING
+        commands:
+          - server 4.3.2.1
+          - server 1.2.3.4
+          - server 2.1.3.4
+          - server 3.2.1.5
+        match: exact
+      tags: replace_on_change

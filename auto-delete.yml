@@ -1,0 +1,13 @@
+---
+#auto-delete.yml
+
+  - name: Auto generate files and directories
+    hosts: all
+    connection: local
+    gather_facts: no
+
+    tasks:
+      - name: DELETE DIRECTORIES PREVIOUSLY CREATED ON OS
+        file: 
+          path: /home/ntc/files/ansible/{{ ansible_network_os }}/
+          state: absent
